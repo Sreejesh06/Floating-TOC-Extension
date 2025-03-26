@@ -2,11 +2,17 @@ import { createRoot } from 'react-dom/client';
 import Toc from './components/Toc';
 import './styles.css';
 
-// Create container
+let tocVisible = true;
 const container = document.createElement('div');
 container.id = 'toc-root';
 document.body.appendChild(container);
-
-// Render React app
 const root = createRoot(container);
 root.render(<Toc />);
+
+// Add message listener
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "toggleTOC") {
+    tocVisible = !tocVisible;
+    container.style.display = tocVisible ? 'block' : 'none';
+  }
+});

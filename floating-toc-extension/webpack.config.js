@@ -2,10 +2,15 @@ const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: './src/content.js',
+  entry: {
+    content: './src/content.js',
+    popup: './src/popup.js'
+     // Add if you have background script
+  },
   output: {
-    filename: 'content.js',
+    filename: '[name].js', // This ensures unique filenames
     path: path.resolve(__dirname, 'dist'),
+    clean: true,
   },
   module: {
     rules: [
@@ -23,7 +28,8 @@ module.exports = {
   plugins: [
     new CopyPlugin({
       patterns: [
-        { from: 'public', to: '.' }
+        { from: 'public', to: '.' },
+        { from: 'src/styles.css', to: 'styles.css' } // Explicit CSS copy
       ]
     })
   ],
