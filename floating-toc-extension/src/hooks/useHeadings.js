@@ -4,46 +4,67 @@ const useHeadings = () => {
   const [headings, setHeadings] = useState([]);
 
   useEffect(() => {
-    // Try to find main content area
-    const mainContentSelectors = [
-      'main', 
+    // Find main content area using common content selectors
+    const contentSelectors = [
       'article', 
-      '.main-content', 
-      '#content', 
-      '.content', 
+      'main',
+      '.article-content',
       '.post-content',
-      '.article-content'
+      '.main-content',
+      '.document-content',
+      '.entry-content',
+      '.content',
+      '#content',
+      '.blog-post',
+      '.documentation'
     ];
     
-    let mainContent = document.body; // Default to body if no better container found
+    // Find the first matching content container
+    let contentContainer = null;
     
-    for (const selector of mainContentSelectors) {
+    for (const selector of contentSelectors) {
       const element = document.querySelector(selector);
-      if (element) {
-        mainContent = element;
+      if (element && element.offsetHeight > 200) { // Make sure it's substantial content
+        contentContainer = element;
         break;
       }
     }
     
-    // Get headings from the main content
+    // Fallback to <body> if no content container found
+    if (!contentContainer) {
+      contentContainer = document.body;
+    }
+    
+    // Get all headings from the identified main content area
     const elements = Array.from(
-      mainContent.querySelectorAll('h1, h2, h3, h4, h5, h6')
+      contentContainer.querySelectorAll('h1, h2, h3, h4, h5, h6')
     ).filter(el => {
-      // Filter out headings that are likely not part of the main content
-      const isVisible = el.offsetWidth > 0 && el.offsetHeight > 0;
-      const notInNav = !el.closest('nav, header, footer, aside, .sidebar');
-      return isVisible && notInNav;
-    }).map((el, i) => {
-      if (!el.id) el.id = `heading-${i}`;
+      // Only include visible headings not in navigation areas
+      const isVisible = el.offsetHeight > 0;
+      const hasContent = el.textContent.trim().length > 0;
+      const notInNavigationArea = !el.closest('nav, header, footer, aside, .sidebar, .menu, .navigation');
+      return isVisible && hasContent && notInNavigationArea;
+    });
+    
+    // Generate unique IDs for headings that don't have them
+    const headingsData = elements.map((el, index) => {
+      // Use existing ID or create one
+      if (!el.id) {
+        el.id = `toc-heading-${index}`;
+      }
+      
+      // Clean up text (remove any nested button/span text that might be irrelevant)
+      let headingText = el.textContent.trim();
+      
       return {
         id: el.id,
-        text: el.textContent || '',
-        level: parseInt(el.tagName.substring(1)),
+        text: headingText,
+        level: parseInt(el.tagName.substring(1)), // Get heading level (1-6)
         element: el
       };
     });
     
-    setHeadings(elements);
+    setHeadings(headingsData);
   }, []);
 
   return headings;

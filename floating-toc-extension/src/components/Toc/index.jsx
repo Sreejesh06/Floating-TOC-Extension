@@ -6,6 +6,7 @@ import './styles.css';
 const Toc = () => {
   const headings = useHeadings();
   const [activeId, setActiveId] = useState(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -33,21 +34,42 @@ const Toc = () => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
+  // Don't render if no headings found
+  if (headings.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="toc-container">
-      <h3 className="toc-title">Table of Contents</h3>
-      <ul className="toc-list">
-        {headings.map(h => (
-          <TocItem
-            key={h.id}
-            id={h.id}
-            text={h.text}
-            level={h.level}
-            isActive={h.id === activeId}
-            onClick={scrollTo}
-          />
-        ))}
-      </ul>
+    <div className={`toc-container ${isCollapsed ? 'collapsed' : ''}`}>
+      <div className="toc-header">
+        <h3 className="toc-title">Table of Contents</h3>
+        <button 
+          className="collapse-btn" 
+          onClick={toggleCollapse}
+          title={isCollapsed ? "Expand" : "Collapse"}
+        >
+          {isCollapsed ? "+" : "−"}
+        </button>
+      </div>
+      
+      {!isCollapsed && (
+        <ul className="toc-list">
+          {headings.map(h => (
+            <TocItem
+              key={h.id}
+              id={h.id}
+              text={h.text}
+              level={h.level}
+              isActive={h.id === activeId}
+              onClick={scrollTo}
+            />
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
