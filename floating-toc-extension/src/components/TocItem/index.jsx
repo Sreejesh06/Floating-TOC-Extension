@@ -5,7 +5,7 @@ const TocItem = ({ id, text, level, isActive, onClick }) => {
   return (
     <li 
       className={`toc-item ${isActive ? 'active' : ''}`}
-      style={{ paddingLeft: `${level * 12}px` }}
+      data-level={level}
     >
       <a 
         href={`#${id}`}
@@ -13,6 +13,7 @@ const TocItem = ({ id, text, level, isActive, onClick }) => {
           e.preventDefault();
           onClick(id);
         }}
+        title={text}
       >
         {text}
       </a>
