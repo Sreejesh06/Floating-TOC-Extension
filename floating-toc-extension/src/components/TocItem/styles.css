@@ -1,0 +1,18 @@
+.toc-item a {
+    color: #0366d6;
+    text-decoration: none;
+    display: block;
+    padding: 4px 0;
+    transition: all 0.2s;
+  }
+  
+  .toc-item.active a {
+    font-weight: bold;
+    color: #d03636;
+    border-left: 2px solid #d03636;
+    padding-left: 8px;
+  }
+  
+  .toc-item a:hover {
+    transform: translateX(3px);
+  }
