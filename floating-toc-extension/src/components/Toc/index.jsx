@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import TocItem from '../TocItem';
+import TocItem from '../TocItem'; // Fixed import path
+import useHeadings from '../../hooks/useHeadings'; // Fixed import path
 import './styles.css';
-import useHeadings from '../../hooks/useHeadings';
 
-export default function Toc() {
+const Toc = () => {
   const headings = useHeadings();
   const [activeId, setActiveId] = useState(null);
 
@@ -16,17 +16,21 @@ export default function Toc() {
           }
         });
       },
-      { rootMargin: '0px 0px -50% 0px' }
+      { rootMargin: '0px 0px -50% 0px', threshold: 0.1 }
     );
 
-    headings.forEach(h => observer.observe(h.element));
+    // Only observe elements that exist
+    headings.forEach(h => {
+      if (h.element) {
+        observer.observe(h.element);
+      }
+    });
+    
     return () => observer.disconnect();
   }, [headings]);
 
   const scrollTo = (id) => {
-    document.getElementById(id)?.scrollIntoView({ 
-      behavior: 'smooth' 
-    });
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -38,7 +42,7 @@ export default function Toc() {
             key={h.id}
             id={h.id}
             text={h.text}
-            level={h.level - 1} // Start indentation from h1
+            level={h.level}
             isActive={h.id === activeId}
             onClick={scrollTo}
           />
@@ -46,4 +50,6 @@ export default function Toc() {
       </ul>
     </div>
   );
-}
+};
+
+export default Toc;

@@ -4,11 +4,11 @@ const CopyPlugin = require('copy-webpack-plugin');
 module.exports = {
   entry: {
     content: './src/content.js',
-    popup: './src/popup.js'
-     // Add if you have background script
+    popup: './src/popup.js',
+    background: './src/background.js'
   },
   output: {
-    filename: '[name].js', // This ensures unique filenames
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
   },
@@ -21,19 +21,31 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+              modules: false // Set to true if you want CSS modules
+            }
+          }
+        ]
       }
     ]
   },
   plugins: [
     new CopyPlugin({
       patterns: [
-        { from: 'public', to: '.' },
-        { from: 'src/styles.css', to: 'styles.css' } // Explicit CSS copy
+        { from: 'public', to: '.' }
       ]
     })
   ],
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx'],
+    alias: {
+      components: path.resolve(__dirname, 'src/components'),
+      hooks: path.resolve(__dirname, 'src/hooks')
+    }
   }
 };

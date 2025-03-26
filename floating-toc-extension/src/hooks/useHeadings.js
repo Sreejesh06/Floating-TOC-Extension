@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function useHeadings() {
+const useHeadings = () => {
   const [headings, setHeadings] = useState([]);
 
   useEffect(() => {
@@ -10,7 +10,7 @@ export default function useHeadings() {
       if (!el.id) el.id = `heading-${i}`;
       return {
         id: el.id,
-        text: el.textContent,
+        text: el.textContent || '',
         level: parseInt(el.tagName.substring(1)),
         element: el
       };
@@ -20,4 +20,6 @@ export default function useHeadings() {
   }, []);
 
   return headings;
-}
+};
+
+export default useHeadings;
